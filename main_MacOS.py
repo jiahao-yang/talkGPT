@@ -72,7 +72,7 @@ def send_request(language: str, words: str) -> None:
       ]
     )
     
-    answer = completion.choices[0].message["content"]
+    answer = completion.choices[0].message["content"] # type: ignore
     print(answer)
     
     out = answer.replace('\n', " ")
