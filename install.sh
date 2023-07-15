@@ -1,7 +1,8 @@
 #!/bin/bash
 
 python -m venv venv
-. venv/bin/activate
+#This is for Linux . venv/bin/activate
+This is for Windows . venv/Scripts/activate
 
 # MacOS only
 # brew install portaudio
@@ -9,8 +10,14 @@ python -m venv venv
 # brew install ffmpeg
 
 # Linux only
-sudo apt-get install portaudio19-dev
-sudo apt-get install flac
-sudo apt-get install ffmpeg
+# sudo apt-get install portaudio19-dev
+# sudo apt-get install flac
+# sudo apt-get install ffmpeg
+
+# Windows only
+pip install pipwin
+pipwin install pyaudio
+# Needs to install ffmpeg from downloaded file  
+
 
 pip install -r ./requirements.txt

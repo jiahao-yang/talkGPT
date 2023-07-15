@@ -1,5 +1,7 @@
 openai
-pyaudio
+pydub
 soundfile
 openai-whisper
 SpeechRecognition
+pyttsx3
+pywin32
