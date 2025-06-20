@@ -3,6 +3,7 @@ import os
 import openai
 import subprocess
 import speech_recognition as sr
+import time
 
 
 LANGUAGES = {
@@ -75,7 +76,10 @@ def send_request(language: str, words: str) -> None:
     print(answer)
     
     out = answer.replace('\n', " ")
-    cmd_str = f"say {'--voice Tingting' if language == 'chinese' else ''} \"{out}\""
+    # The following line is only for MacOS
+    # cmd_str = f"say {'--voice Tingting' if language == 'chinese' else ''} \"{out}\""
+    # The following line is only for Linux
+    cmd_str = f"espeak {'-v zh' if language == 'chinese' else ''} \"{out}\""
     
     subprocess.call(cmd_str, shell=True)
 
@@ -100,3 +104,10 @@ if __name__ == "__main__":
     while True:
         input_words = transcribe_speech(language)
         send_request(language, input_words)
+        while True:
+            user_input = input("Press Enter to continue...")
+            if user_input == "":
+                break
+            else:
+                print("Invalid input. Please press Enter to continue.")
+        time.sleep(1) # pause for 1 second before continuing
