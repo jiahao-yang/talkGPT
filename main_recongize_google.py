@@ -1,5 +1,4 @@
 import argparse
-import os
 import time
 import pyttsx3
 import speech_recognition as sr
@@ -48,89 +47,27 @@ def transcribe_speech(language):
 
     return transcribed_text
 
-def send_request(language: str, words: str) -> None:
-    
-    """
-        Sends a request to the OpenAI API and speaks out the response.
+def send_request(language, prompt):
+    # set up the OpenAI API client
+    openai.api_key = openai_secret_manager.get_secret("openai")["api_key"]
 
-        Args:
-            language: A string indicating the language code of the chat message.
-            words: A string containing the chat message to be sent.
-
-        Returns:
-            None.
-
-        Raises:
-            openai.error.OpenAIError: If there is an error with the OpenAI API request.
-    """
-    
-    # Get the API key from the environment variable in Windows
-    openai.api_key = os.getenv("OPENAI_API_KEY")
-    
-    # Send the chat message to the OpenAI API 
-    completion = openai.ChatCompletion.create(
-      model="gpt-3.5-turbo-0301",
-      messages=[
-        {
-            "role": "user", 
-            "content": words
-        }
-      ]
+    # generate autocompletions for the prompt
+    response = openai.Completion.create(
+        engine="davinci",
+        prompt=prompt,
+        max_tokens=60,
+        n=1,
+        stop=None,
+        temperature=0.5,
     )
-    
-    # Get the response from the OpenAI API
-    answer = completion.choices[0].message["content"] # type: ignore
-    # Print the response
-    print("OpenAI API response:")
-    print(answer)
 
-    # Speak out the response
-    # Add try-except block to handle exceptions
-    try:
-        speak(answer, language)
-    except Exception as e:
-        print(e)
-        print("Could not speak out the response. Please try again.")
-        return
+    message = response.choices[0].text.strip()
+    print(f"Response: {message}")
 
-    # return
-
-def speak(text: str, language: str) -> None:
-    """
-    Speaks the given text using the appropriate voice for the given language.
-
-    Args:
-        text: A string containing the text to speak.
-        language: A string indicating the language code of the text. 
-                  This has to be converted to language name.
-
-    Returns:
-        None.
-    """
-    # Initialize the pyttsx engine
+    # speak the response
     engine = pyttsx3.init()
-    engine.setProperty('rate', 150)
-    engine.setProperty('volume', 1.0)
-
-    # Set the voice for the given language
-    engine.setProperty('voice', 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_EN-GB_HAZEL_11.0')
-
-    # Convert language code to pyttsx language name, using the LANGUAGES dictionary
-    language = LANGUAGES.get(language, "english").split()[0].lower()
-    print(f"Speaking out the response in {language}...")
-
-    if language == 'chinese':
-        # Use the Tingting voice for Chinese
-        voices = engine.getProperty('voices')
-        for voice in voices:
-            if 'tingting' in voice.name.lower():
-                engine.setProperty('voice', voice.id)
-                break
-
-    engine.say(text)
+    engine.say(message)
     engine.runAndWait()
-    engine.stop()
-    
 
 if __name__ == "__main__":
     # check for arguments
@@ -166,14 +103,12 @@ if __name__ == "__main__":
         # send the chat message to the OpenAI API
         if words:
             print("Sending request to OpenAI API...")
-            send_request(language_code, words)
+            #send_request(language_code, words)
         else:
             print("No speech detected. Please speak again.")
 
-        # prompt the user to press enter to continue, and Q to quit
-        if input("Press Q to quit, or press any other keys to continue: ").lower() == "q":
-            break
-
+        # prompt the user to press enter to continue
+        input("Press Enter to continue...")
 
         # pause for 1 second before continuing
         time.sleep(1)

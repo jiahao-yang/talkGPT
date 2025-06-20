@@ -1,7 +1,8 @@
 #!/bin/bash
 
 python -m venv venv
-. venv/bin/activate
+#This is for Linux . venv/bin/activate
+This is for Windows . venv/Scripts/activate
 
 # MacOS only
 # brew install portaudio
